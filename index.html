@@ -5,54 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отслеживание цикла</title>
     <style>
+        /* Общие стили */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333333;
         }
+        /* Контейнер */
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+        /* Заголовок */
+        h1 {
+            text-align: center;
+            color: #ff6f61;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        /* Формы */
+        .form-group {
+            margin-bottom: 20px;
         }
         label {
-            font-size: 1.2em;
-        }
-        input {
-            padding: 10px;
+            display: block;
             font-size: 1em;
+            margin-bottom: 8px;
+            color: #555555;
         }
+        input[type="date"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            color: #333333;
+            outline: none;
+        }
+        input[type="date"]:focus,
+        input[type="number"]:focus {
+            border-color: #ff6f61;
+            background-color: #ffffff;
+        }
+        /* Кнопка */
         button {
+            width: 100%;
+            padding: 15px;
             font-size: 1em;
-            padding: 10px 20px;
+            background-color: #ff6f61;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
+        button:hover {
+            background-color: #ff5a4d;
+        }
+        /* Результат */
         .result {
-            margin-top: 20px;
+            margin-top: 30px;
             font-size: 1.2em;
-            color: #333;
+            text-align: center;
+            color: #333333;
+        }
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <label for="last-period-date">Дата начала последней менструации:</label>
-        <input type="date" id="last-period-date">
-        
-        <label for="cycle-length">Средняя продолжительность цикла (дни):</label>
-        <input type="number" id="cycle-length" value="28" min="21" max="35">
-        
+        <h1>Отслеживание цикла</h1>
+        <div class="form-group">
+            <label for="last-period-date">Дата начала последней менструации</label>
+            <input type="date" id="last-period-date">
+        </div>
+        <div class="form-group">
+            <label for="cycle-length">Средняя продолжительность цикла (дни)</label>
+            <input type="number" id="cycle-length" value="28" min="21" max="35">
+        </div>
         <button id="calculate-button">Рассчитать следующий цикл</button>
-        
         <div class="result" id="result"></div>
     </div>
-    
+
     <!-- Подключение библиотеки Telegram Web Apps -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Ваш JavaScript-код -->
@@ -86,20 +138,20 @@
         document.getElementById('calculate-button').addEventListener('click', () => {
             const lastPeriodDate = document.getElementById('last-period-date').value;
             const cycleLength = parseInt(document.getElementById('cycle-length').value);
-            
+
             if (!lastPeriodDate || !cycleLength) {
                 alert('Пожалуйста, заполните все поля.');
                 return;
             }
-            
+
             saveData(lastPeriodDate, cycleLength);
-            
+
             const lastDate = new Date(lastPeriodDate);
             const nextPeriodDate = new Date(lastDate.getTime() + cycleLength * 24 * 60 * 60 * 1000);
-            
+
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const formattedDate = nextPeriodDate.toLocaleDateString('ru-RU', options);
-            
+
             document.getElementById('result').innerText = `Следующая менструация ожидается: ${formattedDate}`;
         });
     </script>
