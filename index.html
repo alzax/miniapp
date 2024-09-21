@@ -53,11 +53,36 @@
         <div class="result" id="result"></div>
     </div>
     
+    <!-- Подключение библиотеки Telegram Web Apps -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Ваш JavaScript-код -->
     <script>
+        // Инициализация Web App
         let tg = window.Telegram.WebApp;
         tg.expand(); // Открыть на весь экран
-        
+
+        // Функция сохранения данных в localStorage
+        function saveData(lastPeriodDate, cycleLength) {
+            const data = {
+                lastPeriodDate: lastPeriodDate,
+                cycleLength: cycleLength
+            };
+            localStorage.setItem('cycleData', JSON.stringify(data));
+        }
+
+        // Функция загрузки данных из localStorage
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('cycleData'));
+            if (data) {
+                document.getElementById('last-period-date').value = data.lastPeriodDate;
+                document.getElementById('cycle-length').value = data.cycleLength;
+            }
+        }
+
+        // Вызов функции загрузки при загрузке страницы
+        window.addEventListener('load', loadData);
+
+        // Обработчик события при нажатии на кнопку
         document.getElementById('calculate-button').addEventListener('click', () => {
             const lastPeriodDate = document.getElementById('last-period-date').value;
             const cycleLength = parseInt(document.getElementById('cycle-length').value);
@@ -66,6 +91,8 @@
                 alert('Пожалуйста, заполните все поля.');
                 return;
             }
+            
+            saveData(lastPeriodDate, cycleLength);
             
             const lastDate = new Date(lastPeriodDate);
             const nextPeriodDate = new Date(lastDate.getTime() + cycleLength * 24 * 60 * 60 * 1000);
