@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отслеживание цикла</title>
     <style>
-        /* Общие стили */
+        /* Ваши стили */
         body, html {
             margin: 0;
             padding: 0;
@@ -14,21 +14,18 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             color: #333333;
         }
-        /* Контейнер */
         .container {
             max-width: 500px;
             margin: 0 auto;
             padding: 40px 20px;
             box-sizing: border-box;
         }
-        /* Заголовок */
         h1 {
             text-align: center;
             color: #ff6f61;
             font-size: 2em;
             margin-bottom: 30px;
         }
-        /* Формы */
         .form-group {
             margin-bottom: 20px;
         }
@@ -55,7 +52,6 @@
             border-color: #ff6f61;
             background-color: #ffffff;
         }
-        /* Кнопка */
         button {
             width: 100%;
             padding: 15px;
@@ -72,14 +68,27 @@
         button:hover {
             background-color: #ff5a4d;
         }
-        /* Результат */
         .result {
             margin-top: 30px;
             font-size: 1.2em;
             text-align: center;
             color: #333333;
         }
-        /* Адаптивность для мобильных устройств */
+        .recommendation {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333333;
+            text-align: center;
+        }
+        .recommendation h2 {
+            color: #ff6f61;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: #ff6f61;
+            margin-top: 10px;
+            text-align: center;
+        }
         @media (max-width: 600px) {
             .container {
                 padding: 20px 15px;
@@ -102,7 +111,9 @@
             <input type="number" id="cycle-length" value="28" min="21" max="35">
         </div>
         <button id="calculate-button">Рассчитать следующий цикл</button>
+        <div class="error-message" id="error-message"></div>
         <div class="result" id="result"></div>
+        <div class="recommendation" id="recommendation"></div>
     </div>
 
     <!-- Подключение библиотеки Telegram Web Apps -->
@@ -134,25 +145,45 @@
         // Вызов функции загрузки при загрузке страницы
         window.addEventListener('load', loadData);
 
+        // Массив рекомендаций для каждого дня цикла
+        const recommendations = [
+            "День 1: Начало менструации. Отдыхайте и позаботьтесь о себе.",
+            "День 2: Возможен дискомфорт. Тёплая ванна может помочь.",
+            // ... добавьте остальные рекомендации ...
+            "День 28: Завершение цикла. Подведите итоги месяца."
+        ];
+
         // Обработчик события при нажатии на кнопку
         document.getElementById('calculate-button').addEventListener('click', () => {
             const lastPeriodDate = document.getElementById('last-period-date').value;
             const cycleLength = parseInt(document.getElementById('cycle-length').value);
 
+            const errorMessage = document.getElementById('error-message');
             if (!lastPeriodDate || !cycleLength) {
-                alert('Пожалуйста, заполните все поля.');
+                errorMessage.innerText = 'Пожалуйста, заполните все поля.';
                 return;
+            } else {
+                errorMessage.innerText = '';
             }
 
             saveData(lastPeriodDate, cycleLength);
 
             const lastDate = new Date(lastPeriodDate);
+            const today = new Date();
+            const dayDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+            const dayOfCycle = ((dayDiff % cycleLength) + cycleLength) % cycleLength + 1;
+
             const nextPeriodDate = new Date(lastDate.getTime() + cycleLength * 24 * 60 * 60 * 1000);
 
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const formattedDate = nextPeriodDate.toLocaleDateString('ru-RU', options);
 
             document.getElementById('result').innerText = `Следующая менструация ожидается: ${formattedDate}`;
+
+            // Отображение рекомендации из массива
+            const recommendationDiv = document.getElementById('recommendation');
+            const recommendation = recommendations[dayOfCycle - 1] || "Нет рекомендации для данного дня.";
+            recommendationDiv.innerHTML = `<h2>Рекомендация на сегодня</h2><p>${recommendation}</p>`;
         });
     </script>
 </body>
